@@ -13,8 +13,7 @@ def cell_maker(content):
     return "|" + str(round(content,2)).rjust(8)
 
 def non_capn(pr,pmt,nom,day_0=None,month_1=None,term=None):
-    day_0 = dt.datetime.strptime("2020-01-01","%Y-%m-%d")
-    
+   
     
     sched = []
     line = {}
@@ -55,7 +54,22 @@ def non_capn(pr,pmt,nom,day_0=None,month_1=None,term=None):
         output += '|'
         print(output)
 
-non_capn(20000,310,0.045,term=60)
+
+pr = float(input('Input the amount borrowed'))
+pmt = float(input('Input the monthly payment amount'))
+nom = float(input('Input the nominal rate of interest (e.g., for 4.5%, input 4.5)')) / 100
+
+q = input('Do you wish to specify a drawdown date Y/N? (If N, today\'s date will be used.)')
+if q == 'Y':
+    day_0 = input('Input the drawdown date in the format DD/MM/YYYY')
+else:
+    day_0 = dt.datetime.today()
+
+#MONTH_1 function to be added
+
+term = float(input('Input the term'))
+
+non_capn(pr,pmt,nom,day_0=day_0,term=term)
 
         
         
