@@ -61,7 +61,10 @@ nom = float(input('Input the nominal rate of interest (e.g., for 4.5%, input 4.5
 
 q = input('Do you wish to specify a drawdown date Y/N? (If N, today\'s date will be used.)')
 if q == 'Y':
-    day_0 = input('Input the drawdown date in the format DD/MM/YYYY')
+    raw = input('Input the drawdown date in the format DD/MM/YYYY')
+    day, month, year = raw.split('/')
+    day_0 = dt.datetime(int(year), int(month), int(day))
+    
 else:
     day_0 = dt.datetime.today()
 
