@@ -11,7 +11,7 @@ import dateutil as du
 
 def get_float(prompt,dp=None,mini=None,maxi=None):
     while True:
-        f = input(prompt + '\n>>>')
+        f = input(prompt + '\n>>> ')
         try:
             f = float(f)
             if dp:
@@ -32,6 +32,16 @@ def get_float(prompt,dp=None,mini=None,maxi=None):
         
         return f
 
+def get_str(prompt,valids=None):
+    while True:
+        s = input(prompt + '\n>>> ')
+        if valids:
+            if s not in valids:
+                opts = ', '.join(valids)
+                print('Please select from {}'.format(opts))
+                continue
+        return s
+        
 
 def cell_maker(content):
     return "|" + str(round(content,2)).rjust(8)
@@ -83,7 +93,7 @@ pr = get_float('Input the amount borrowed',dp=2,mini=0)
 pmt = get_float('Input the monthly payment amount',dp=2,mini=0)
 nom = get_float('Input the nominal rate of interest (e.g., for 4.5%, input 4.5)',mini=0) / 100
 
-q = input('Do you wish to specify a drawdown date Y/N? (If N, today\'s date will be used.)')
+q = get_str('Do you wish to specify a drawdown date Y/N? (If N, today\'s date will be used.)',valids=['Y','N'])
 if q == 'Y':
     raw = input('Input the drawdown date in the format DD/MM/YYYY')
     day, month, year = raw.split('/')
