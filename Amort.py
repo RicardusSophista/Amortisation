@@ -9,6 +9,30 @@ import datetime as dt
 import dateutil as du
 
 
+def get_float(prompt,dp=None,mini=None,maxi=None):
+    while True:
+        f = input(prompt + '\n>>>')
+        try:
+            f = float(f)
+            if dp:
+                f = round(f,dp)
+        except:
+            print('Please input a number.')
+            continue
+        
+        if mini != None:
+            if f < mini:
+                print('Please input a number that is greater than {}.'.format(mini))
+                continue
+        
+        if maxi != None:
+            if f > maxi:
+                print('Please input a number that is less than {}.'.format(maxi))
+                continue
+        
+        return f
+
+
 def cell_maker(content):
     return "|" + str(round(content,2)).rjust(8)
 
@@ -55,9 +79,9 @@ def non_capn(pr,pmt,nom,day_0=None,month_1=None,term=None):
         print(output)
 
 
-pr = float(input('Input the amount borrowed'))
-pmt = float(input('Input the monthly payment amount'))
-nom = float(input('Input the nominal rate of interest (e.g., for 4.5%, input 4.5)')) / 100
+pr = get_float('Input the amount borrowed',dp=2,mini=0)
+pmt = get_float('Input the monthly payment amount',dp=2,mini=0)
+nom = get_float('Input the nominal rate of interest (e.g., for 4.5%, input 4.5)',mini=0) / 100
 
 q = input('Do you wish to specify a drawdown date Y/N? (If N, today\'s date will be used.)')
 if q == 'Y':
