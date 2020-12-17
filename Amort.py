@@ -35,10 +35,14 @@ def get_float(prompt,dp=None,mini=None,maxi=None):
                 continue        
         return f
 
-def get_str(prompt,valids=None):
+def get_str(prompt,valids=None,case_sensitive='N'):
     while True:
         s = input(prompt + '\n>>> ')
         if valids:
+            if case_sensitive == 'N':
+                valids = [v.upper() for v in valids]
+                s = s.upper()
+            
             if s not in valids:
                 opts = ', '.join(valids)
                 print('Please select from {}'.format(opts))
