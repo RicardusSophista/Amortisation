@@ -42,6 +42,27 @@ def get_str(prompt,valids=None):
                 continue
         return s
         
+def get_date(prompt,earliest=None,latest=None):
+    while True:
+        raw = input(prompt + '\n>>> ')
+        try:
+            day, month, year = raw.split('/')
+            d = dt.datetime(int(year), int(month), int(day))
+        except:
+            print('Please enter a valid date in the format DD/MM/YYYY')
+            continue
+        
+        if earliest:
+            if d < earliest:
+                print('Please enter a date that is later than {}.'.format(earliest))
+                continue
+        if latest:
+            if d > latest:
+                print('Please enter a date that is earlier than {}.'.format(latest))
+                continue
+        
+        return d
+        
 
 def cell_maker(content):
     return "|" + str(round(content,2)).rjust(8)
@@ -95,10 +116,7 @@ nom = get_float('Input the nominal rate of interest (e.g., for 4.5%, input 4.5)'
 
 q = get_str('Do you wish to specify a drawdown date Y/N? (If N, today\'s date will be used.)',valids=['Y','N'])
 if q == 'Y':
-    raw = input('Input the drawdown date in the format DD/MM/YYYY')
-    day, month, year = raw.split('/')
-    day_0 = dt.datetime(int(year), int(month), int(day))
-    
+    day_0 = get_date('Input the drawdown date in the format DD/MM/YYYY')    
 else:
     day_0 = dt.datetime.today()
 
