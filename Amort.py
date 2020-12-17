@@ -11,11 +11,15 @@ import dateutil as du
 
 def get_float(prompt,dp=None,mini=None,maxi=None):
     while True:
-        f = input(prompt + '\n>>> ')
+        raw = input(prompt + '\n>>> ')
         try:
-            f = float(f)
-            if dp:
-                f = round(f,dp)
+            raw = float(raw)
+            if dp != None:
+                f = round(raw,dp)
+                if f != raw:
+                    print('{} has been rounded to {}.'.format(raw,f))
+            else:
+                f = raw
         except:
             print('Please input a number.')
             continue
@@ -28,8 +32,7 @@ def get_float(prompt,dp=None,mini=None,maxi=None):
         if maxi != None:
             if f > maxi:
                 print('Please input a number that is less than {}.'.format(maxi))
-                continue
-        
+                continue        
         return f
 
 def get_str(prompt,valids=None):
@@ -41,6 +44,7 @@ def get_str(prompt,valids=None):
                 print('Please select from {}'.format(opts))
                 continue
         return s
+
         
 def get_date(prompt,earliest=None,latest=None):
     while True:
