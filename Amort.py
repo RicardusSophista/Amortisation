@@ -45,6 +45,25 @@ def get_str(prompt,valids=None):
                 continue
         return s
 
+def get_int(prompt, mini=None,maxi=None):
+    while True:
+        raw = input(prompt + '\n>>> ')
+        try:
+            i = int(raw)
+        except:
+            print('Please enter a whole number.')
+            continue
+        
+        if mini != None:
+            if i < mini:
+                print('c. Please enter a whole number that is greater than {}.'.format(mini))
+                continue
+            
+        if maxi != None:
+            if i > maxi:
+                print('d. Please enter a whole number that is less than {}.'.format(maxi))
+                continue
+        return i
         
 def get_date(prompt,earliest=None,latest=None):
     while True:
@@ -126,7 +145,7 @@ else:
 
 #MONTH_1 function to be added
 
-term = float(input('Input the term'))
+term = get_int('Input the term',mini=0)
 
 non_capn(pr,pmt,nom,day_0=day_0,term=term)
 
