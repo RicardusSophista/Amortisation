@@ -81,11 +81,11 @@ def get_date(prompt,earliest=None,latest=None):
         
         if earliest:
             if d < earliest:
-                print('Please enter a date that is later than {}.'.format(earliest))
+                print('Please enter a date that is later than {}.'.format(earliest.strftime('%d/%m/%Y')))
                 continue
         if latest:
             if d > latest:
-                print('Please enter a date that is earlier than {}.'.format(latest))
+                print('Please enter a date that is earlier than {}.'.format(latest.strftime('%d/%m/%Y')))
                 continue
         
         return d
@@ -109,7 +109,11 @@ def non_capn(pr,pmt,nom,day_0=None,month_1=None,term=None):
     prev_date = day_0
     
     while i < term:
-        curr_date = prev_date + du.relativedelta.relativedelta(months=1)
+        if i == 1 and month_1 != None:
+            curr_date = month_1
+        else:
+            curr_date = prev_date + du.relativedelta.relativedelta(months=1)
+        
         delta = curr_date - prev_date
         num_days = delta.days
         
@@ -147,11 +151,15 @@ if q == 'Y':
 else:
     day_0 = dt.datetime.today()
 
-#MONTH_1 function to be added
+q = get_str('Do you wish to specify a first payment date Y/N? (If N, the first payment will be one month after drawdown.)',valids=['Y','N'])
+if q == 'Y':
+    month_1 = get_date('Input the first payment date in the format DD/YY/MMMM', earliest=day_0)
+else:
+    month_1 = None
 
 term = get_int('Input the term',mini=0)
 
-non_capn(pr,pmt,nom,day_0=day_0,term=term)
+non_capn(pr,pmt,nom,day_0=day_0,month_1=month_1,term=term)
 
         
         
