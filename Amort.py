@@ -94,47 +94,60 @@ def get_date(prompt,earliest=None,latest=None):
 def cell_maker(content):
     return "|" + str(round(content,2)).rjust(8)
 
-def non_capn(pr,pmt,nom,day_0=None,month_1=None,term=None):
-   
+
+def gen_amort(pr, pmt, nom, pmt_sched, int_sched=None, int_only_sched=None):
+    """At input, must ensure pmt_sched[0] is drawdown"""
     
-    sched = []
-    line = {}
-    line['date'] = day_0.strftime("%d/%m/%Y")
-    line['intr'] = 0
-    line['pmt'] = 0
-    line['pr'] = pr
-    sched.append(line)
-    
-    i = 1
-    prev_date = day_0
-    
-    while i < term:
-        if i == 1 and month_1 != None:
-            curr_date = month_1
-        else:
-            curr_date = prev_date + du.relativedelta.relativedelta(months=1)
+    if int_sched == None and int_only_sched == None:
+        int_sched = pmt_sched
         
-        delta = curr_date - prev_date
-        num_days = delta.days
+    amort_dates = sorted(set(pmt_sched + int_sched))
+    amort_sched = []
+     
+    
+    for d, i in enumerate(amort_dates):
         
         line = {}
+        line['date'] = d
         
-        line['date'] = curr_date.strftime("%d/%m/%Y")
-        intr = num_days * pr * (nom/366)
-        line['intr'] = intr
-        line['pmt'] = pmt
-        pr = pr + intr - pmt
+        if i == 0:
+            line['intr'] = 0
+            line['capz'] = 0
+            line['pmt'] = 0
+            line['pr'] = pr
+            amort_sched.append(line)
+            continue
+        
+        prev_line = amort_sched[i-1]
+        delta = d - prev_line['date']
+        num_days = delta.days
+        
+        pr = prev_line['pr']
+        intr = (num_days * pr * (nom/365)) + prev_line['intr']
+        
+        if d in int_sched:
+            line['capz'] = intr
+            line['intr'] = 0
+            pr += intr
+        else:
+            line['capz'] = 0
+            line['intr'] = intr
+        
+        if d in pmt_sched:
+            line['pmt'] = pmt
+            pr -= pmt
+        else:
+            line['pmt'] = 0
+        
         line['pr'] = pr
         
-        sched.append(line)
+        amort_sched.append(line)
         
-        i += 1
-        prev_date = curr_date
-    
-    for l in sched:
+        
+    for l in amort_sched:
         output = '|'
         output += str(l['date'])
-        output += cell_maker(l['intr'])
+        output += cell_maker(l['capz'])
         output += cell_maker(l['pmt'])
         output += cell_maker(l['pr'])
         output += '|'
