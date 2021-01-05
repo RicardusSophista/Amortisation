@@ -7,6 +7,7 @@ Created on Sat Dec 12 22:45:04 2020
 
 import datetime as dt
 import dateutil as du
+import scheduler as sc
 
 
 def get_float(prompt,dp=None,mini=None,maxi=None):
@@ -105,7 +106,7 @@ def gen_amort(pr, pmt, nom, pmt_sched, int_sched=None, int_only_sched=None):
     amort_sched = []
      
     
-    for d, i in enumerate(amort_dates):
+    for i, d in enumerate(amort_dates):
         
         line = {}
         line['date'] = d
@@ -172,8 +173,8 @@ else:
 
 term = get_int('Input the term',mini=0)
 
-non_capn(pr,pmt,nom,day_0=day_0,month_1=month_1,term=term)
+mth_term = sc.Schedule('month', 1)
+pmt_sched = mth_term.recite(day_0, term=term, incr_1=month_1)
 
-        
-        
-    
+
+gen_amort(pr, pmt, nom, pmt_sched)
