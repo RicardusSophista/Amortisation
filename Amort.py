@@ -147,7 +147,7 @@ def gen_amort(pr, pmt, nom, pmt_sched, int_sched=None, int_only_sched=None):
         
     for l in amort_sched:
         output = '|'
-        output += str(l['date'])
+        output += str(l['date'].strftime('%d/%m/%Y'))
         output += cell_maker(l['capz'])
         output += cell_maker(l['pmt'])
         output += cell_maker(l['pr'])
@@ -171,10 +171,30 @@ if q == 'Y':
 else:
     month_1 = None
 
+basis_input = get_str('Input the repayment basis (Y = year, M = month, W = week)',valids=['Y','M','N'])
+basis_keys = {'Y': 'year', 'M': 'month', 'W': 'week'}
+basis = basis_keys[basis_input]
+
+incr = get_int('Input the payment frequency, i.e., payments are due once every __ {}s'.format(basis),mini=1)
+
 term = get_int('Input the term',mini=0)
 
-mth_term = sc.Schedule('month', 1)
-pmt_sched = mth_term.recite(day_0, term=term, incr_1=month_1)
+pmt_rules = sc.Schedule(basis, incr)
+pmt_sched = pmt_rules.recite(day_0, term=term, incr_1=month_1)
 
+q = get_str('Do you wish to specify a capitalisation schedule that differs from the repayment schedule Y/N?', valids=['Y','N'])
+if q == 'Y':
+    capz_basis_input = get_str('Input the capitalisation basis (Y = year, M = month, W = week)',valids=['Y','M','N'])
+    capz_basis = basis_keys[capz_basis_input]
+    
+    capz_incr = get_int('Input the capitalisation frequency, i.e., interest capitalises once every __ {}s'.format(capz_basis),mini=1)
+    capz_start = get_date('Input the first date of the capitalisation schedule. This must be greater than the drawdown date of {}'
+                        .format(day_0.strftime('%d/%m/%Y')), earliest=day_0)
+    capz_end = pmt_rules.nth_term(day_0, term)
+    
+    capz_rules = sc.Schedule(capz_basis, capz_incr)
+    capz_sched = capz_rules.recite(capz_start, stop=capz_end)
+else:
+    capz_sched = None
 
-gen_amort(pr, pmt, nom, pmt_sched)
+gen_amort(pr, pmt, nom, pmt_sched, int_sched=capz_sched)
